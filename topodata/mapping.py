@@ -89,13 +89,9 @@ def get_polygon_mask(tile, polygon_file):
     coordinates = sight_polygon.get("coordinates")[0]
     coordinates.append(coordinates[0])
     polygon = MultiPoint(coordinates).convex_hull
-    print(polygon.area)
     polygon_points = mapping(polygon)
-    print(type(polygon_points))
-    print(polygon_points)
 
     masked_map, masked_transform = mask(uncut_map, [polygon_points])
-    print(len(masked_map))
 
     out_meta = uncut_map.meta.copy()
     out_meta.update(
@@ -106,6 +102,7 @@ def get_polygon_mask(tile, polygon_file):
         }
     )
 
+    # TODO: write in chunks/blocks (use smaller size than window reading)
     with rasterio.open("test_masked_raster.tif", "w", **out_meta) as f:
         f.write(masked_map)
 
