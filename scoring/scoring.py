@@ -74,7 +74,15 @@ def score_pixels_windowed(raster_file, device):
     PADDING = MAX_WINDOW_SIZE // 2
     with rasterio.open(raster_file, "r") as src:
         profile = src.profile.copy()
-        profile.update(dtype="float32", count=1)
+        profile.update(
+            dtype="float32",
+            count=1,
+            compress="LZW",
+            predictor=2,
+            tiled=True,
+            blockxsize=TILE_SIZE,
+            blockysize=TILE_SIZE,
+        )
 
         with rasterio.open("tiled_scoring.tif", "w", **profile) as dst:
             for y in range(0, src.height, TILE_SIZE):
